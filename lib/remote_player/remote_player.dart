@@ -4,6 +4,7 @@ import 'package:bonfire/bonfire.dart';
 import 'package:flame/animation.dart' as FlameAnimation;
 import 'package:flutter/material.dart';
 import 'package:mountain_fight/main.dart';
+import 'package:mountain_fight/model/hello.dart';
 import 'package:mountain_fight/socket/SocketManager.dart';
 import 'package:mountain_fight/util/buffer_delay.dart';
 import 'package:mountain_fight/util/extensions.dart';
@@ -53,6 +54,12 @@ class RemotePlayer extends SimpleEnemy {
       fontSize: height / 3.5,
     );
     SocketManager().listen('message', (data) {
+      if(data is Hello){
+
+      }
+
+      Hello hello = data;
+
       String action = data['action'];
       if (action != 'PLAYER_LEAVED' && data['time'] != null) {
         _buffer.add(
