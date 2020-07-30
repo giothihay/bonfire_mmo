@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:mountain_fight/custom_player/custom_player.dart';
 import 'package:mountain_fight/custom_player/custom_player_extensions.dart';
 import 'package:mountain_fight/main.dart';
+import 'package:mountain_fight/model/hello.dart';
 import 'package:mountain_fight/socket/SocketManager.dart';
 import 'package:mountain_fight/util/extensions.dart';
 
@@ -19,7 +20,7 @@ class GamePlayer extends CustomPlayer {
   JoystickMoveDirectional atualDiretional;
   TextConfig _textConfig;
   Timer _timerStamina;
-  String lastMove='IDLE';
+  String lastMove = 'IDLE';
 
   GamePlayer(this.id, this.nick, this.initPosition, SpriteSheet spriteSheet)
       : super(
@@ -85,22 +86,12 @@ class GamePlayer extends CustomPlayer {
     }
   }
 
-
+  var hello = new HelloObjectBuilder(message: "mmm", name: "same", count: 1);
 
   void sendPositionToServer(String diretionalEVent) {
-    if (position != null)
-      SocketManager().send('message', {
-        'action': 'MOVE',
-        'time': DateTime.now().toIso8601String(),
-        'data': {
-          'player_id': id,
-          'direction': diretionalEVent,
-          'position': {
-            'x': (position.left / tileSize),
-            'y': (position.top / tileSize)
-          },
-        }
-      });
+    hello.toBytes();
+
+    if (position != null) SocketManager().send('message', hello.toBytes());
   }
 
   void showEmote(FlameAnimation.Animation emoteAnimation) {
@@ -142,18 +133,7 @@ class GamePlayer extends CustomPlayer {
       return;
     }
     decrementStamina(25);
-    SocketManager().send('message', {
-      'action': 'ATTACK',
-      'time': DateTime.now().toIso8601String(),
-      'data': {
-        'player_id': id,
-        'direction': this.lastDirection.getName(),
-        'position': {
-          'x': (position.left / tileSize),
-          'y': (position.top / tileSize)
-        },
-      }
-    });
+    SocketManager().send('message', hello.toBytes());
     var anim = FlameAnimation.Animation.sequenced('axe_spin_atack.png', 8,
         textureWidth: 148, textureHeight: 148, stepTime: 0.05);
     this.simpleAttackRange(
@@ -181,15 +161,7 @@ class GamePlayer extends CustomPlayer {
 
   @override
   void receiveDamage(double damage, int from) {
-    SocketManager().send('message', {
-      'action': 'RECEIVED_DAMAGE',
-      'time': DateTime.now().toIso8601String(),
-      'data': {
-        'player_id': id,
-        'damage': damage,
-        'player_id_attack': from,
-      }
-    });
+    SocketManager().send('message', hello.toBytes());
     this.showDamage(damage,
         config: TextConfig(color: Colors.red, fontSize: 14));
     super.receiveDamage(damage, from);
@@ -279,10 +251,10 @@ class GamePlayer extends CustomPlayer {
 
             break;
           case JoystickMoveDirectional.IDLE:
-            diretionalEVent='IDLE';
-            if(lastMove=='IDLE'){
+            diretionalEVent = 'IDLE';
+            if (lastMove == 'IDLE') {
               break;
-            } else{
+            } else {
               sendPositionToServer(diretionalEVent);
             }
             idle();
@@ -293,5 +265,4 @@ class GamePlayer extends CustomPlayer {
       }
     }
   }
-
 }

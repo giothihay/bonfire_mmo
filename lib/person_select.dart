@@ -6,6 +6,8 @@ import 'package:mountain_fight/game.dart';
 import 'package:mountain_fight/player/sprite_sheet_hero.dart';
 import 'package:mountain_fight/socket/SocketManager.dart';
 
+import 'model/hello.dart';
+
 class PersonSelect extends StatefulWidget {
   @override
   _PersonSelectState createState() => _PersonSelectState();
@@ -38,24 +40,31 @@ class _PersonSelectState extends State<PersonSelect> {
       });
     });
 
-    SocketManager().listen('message', (data) {  // lắng nghe server trả về gì
-      if (data is Map && data['action'] == 'PLAYER_JOIN') { // khi có người chơi online
+    SocketManager().listen('message', (data) {
+      // lắng nghe server trả về gì
+      if (data is Map && data['action'] == 'PLAYER_JOIN') {
+        // khi có người chơi online
         setState(() {
           loading = false;
         });
-        if (data['data']['nick'] == nick) { // nếu người chơi vừa mới join là mình thì sẽ tạo một màn hình game mới
+        if (data['data']['nick'] == nick) {
+          // nếu người chơi vừa mới join là mình thì sẽ tạo một màn hình game mới
           SocketManager().cleanListeners();
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => Game( // khởi tạo một game mới
+                builder: (context) => Game(
+                    // khởi tạo một game mới
                     playersOn: data['data']['playersON'],
                     nick: nick,
                     playerId: data['data']['id'],
                     idCharacter: count,
-                    position: Position( // tọa độ người chơi
-                      double.parse(data['data']['position']['x'].toString()), // tọa độ x của nhân vật
-                      double.parse(data['data']['position']['y'].toString()), // tọa độ y của nhân vật
+                    position: Position(
+                      // tọa độ người chơi
+                      double.parse(data['data']['position']['x'].toString()),
+                      // tọa độ x của nhân vật
+                      double.parse(data['data']['position']['y']
+                          .toString()), // tọa độ y của nhân vật
                     ))),
           );
         }
@@ -219,7 +228,8 @@ class _PersonSelectState extends State<PersonSelect> {
     }
   }
 
-  void _goGame() { // vào game khi mà đã kết nối đến server thành công
+  void _goGame() {
+    // vào game khi mà đã kết nối đến server thành công
     if (SocketManager().connected) {
       setState(() {
         loading = true;
@@ -230,10 +240,10 @@ class _PersonSelectState extends State<PersonSelect> {
     }
   }
 
-  void _joinGame() {  // gửi user lên server
-    SocketManager().send('message', {
-      'action': 'CREATE',
-      'data': {'nick': nick, 'skin': count}
-    });
+  var hello = new HelloObjectBuilder(message: "mmm", name: "same", count: 1);
+
+  void _joinGame() {
+    // gửi user lên server
+    SocketManager().send('message', hello.toBytes());
   }
 }

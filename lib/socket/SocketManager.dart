@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
+import 'package:mountain_fight/model/hello.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketManager {
@@ -58,7 +61,7 @@ class SocketManager {
     });
   }
 
-  void send(String event, Map data) {
+  void send(String event, Uint8List data) {
     if (connected) {
       print('$LOG send($event) - $data');
       socket.emit(event, data);

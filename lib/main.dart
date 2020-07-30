@@ -10,7 +10,7 @@ void main() async {
   await Flame.util.setLandscape();
   await Flame.util.fullScreen();
 
-  SocketManager.configure('http://192.168.1.189:3000');
+  SocketManager.configure('localhost:3000');
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
