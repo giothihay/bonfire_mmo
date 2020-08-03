@@ -1,0 +1,10 @@
+
+table PlayerPosition{
+    playerId:int;
+    x:double;
+    y:double;      
+    direction:string;
+    time:string;
+}
+
+root_type PlayerPosition;
